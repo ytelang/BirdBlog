@@ -65,7 +65,7 @@ async function getLatestPosts(client, n) {
   const posts = await client
     .db("bird_blogs")
     .collection("blogPosts")
-    .find({}, { title: 1, _id: 0 })
+    .find({})
     .sort({ timestamp: -1 })
     .limit(n);
 
@@ -74,8 +74,21 @@ async function getLatestPosts(client, n) {
   });
 }
 
+function chooseRandom(arr) {
+  const random = Math.floor(Math.random() * arr.length);
+  return arr[random];
+}
+
 async function getTrends(client) {
-  const trends = await client.db("bird_blogs").collection("blogPosts").find({});
+  const trends = await client
+    .db("bird_blogs")
+    .collection("twitterPosts")
+    .find({})
+    .project({ trend: 1, _id: 0 });
+
+  return new Promise((resolve, reject) => {
+    resolve(trends.toArray());
+  });
 }
 
 async function getTrendingPosts(client, trend) {
@@ -110,20 +123,22 @@ async function analyzeSentiments(documents) {
     includeOpinionMining: true,
   });
 
-  totals = {"positive": 0, "negative": 0};
+  totals = { positive: 0, negative: 0 };
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     // console.log(`- Document ${result.id}`);
     if (!result.error) {
       for (const [key, val] of Object.entries(result.confidenceScores)) {
-        if (key != "neutral") totals[key] += val ;
+        if (key != "neutral") totals[key] += val;
       }
     } else {
       console.error(`\tError: ${result.error}`);
     }
   }
   // console.log(totals);
-  const result = Object.entries(totals).reduce((a, b) => a[1] > b[1] ? a : b)[0]
+  const result = Object.entries(totals).reduce((a, b) =>
+    a[1] > b[1] ? a : b
+  )[0];
   return new Promise((resolve, reject) => {
     resolve(result);
   });
@@ -141,9 +156,8 @@ function generateSADocs(strArr) {
   return documents;
 }
 
-function generateTestDBPost(text, image, sentiment, trend, title) {
+function generateTestDBPost(text, image, sentiment, trend) {
   return {
-    title: title,
     trend: trend,
     timestamp: new Date(),
     content: text,
@@ -167,16 +181,15 @@ dbConnect().catch(console.error);
 
 const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
 
-  const configuration = new Configuration({
-    apiKey: secrets.OPEN_AI_KEY,
-  });
-  const openai = new OpenAIApi(configuration);
+const configuration = new Configuration({
+  apiKey: secrets.OPEN_AI_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
 async function getResponse(trend, sentiment) {
-  
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: "write a "+sentiment+" blog about "+trend,
+    prompt: "write a " + sentiment + " blog about " + trend,
     max_tokens: 1090,
   });
 
@@ -184,7 +197,7 @@ async function getResponse(trend, sentiment) {
   console.log(response);
   // responses.concat(response);
 
-  cleanedResponse = response.trim() + "\nBars";
+  cleanedResponse = response.trim();
   return new Promise((resolve, reject) => {
     resolve(cleanedResponse);
   });
@@ -192,7 +205,7 @@ async function getResponse(trend, sentiment) {
 
 async function getImage(trend, sentiment) {
   const image = await openai.createImage({
-    prompt: "a photo of "+trend+" depicted in a "+sentiment+" manner",
+    prompt: "a photo of " + trend + " depicted in a " + sentiment + " manner",
     n: 1,
     size: "1024x1024",
   });
@@ -209,13 +222,15 @@ app.get("/", async (req, res) => {
   res.render("../index.ejs", {
     tweet: testR,
     latestPosts: postList,
-
   });
 });
 
 app.post("/", async (req, res) => {
-  let trend = "League of Legends"
-  let posts = await getTrendingPosts(client, "Testing").catch((err) => {
+  let trends = await getTrends(client);
+  let trendList = []
+  for (const [key, val] of Object.entries(trends)) trendList.push(val);
+  let trend = chooseRandom(trendList).trend;
+  let posts = await getTrendingPosts(client, trend).catch((err) => {
     console.error(err);
   });
   let documents = generateSADocs(posts[0].posts);
@@ -225,7 +240,12 @@ app.post("/", async (req, res) => {
   let text = await getResponse(trend, sentiment);
   let img = await getImage(trend, sentiment);
   res.redirect("back");
-  let blogPost = generateTestDBPost(text, img, sentiment, trend, "Test Blog Post");
+  let blogPost = generateTestDBPost(
+    text,
+    img,
+    sentiment,
+    trend
+  );
   await insertBlogPost(client, blogPost);
 });
 
