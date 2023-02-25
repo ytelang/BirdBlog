@@ -8,6 +8,15 @@
                 background: #84CAE7;
                 }
 
+                a
+                {
+                        color: #262322;
+                }
+                a:visited { text-decoration: none; color:#262322; }
+                a:hover { text-decoration: none; color:#262322; }
+                a:focus { text-decoration: none; color:#262322; }
+                a:hover, a:active { text-decoration: none; color:#262322 }
+
                 .leftcolumn {
                 float: left;
                 width: 70%;
@@ -41,8 +50,18 @@
                 }
 
                 .blog-post {
-                  overflow-y: auto; 
+                  overflow-y: scroll; 
                   white-space: pre-wrap;
+                }
+
+                .blog-post::-webkit-scrollbar
+                {
+                        display: none;
+                }
+
+                .blog-post {
+                -ms-overflow-style: none;  /* IE and Edge */
+                scrollbar-width: none;  /* Firefox */
                 }
 
                 .card {
