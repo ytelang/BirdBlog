@@ -157,9 +157,10 @@
                 <div class="card" style=border-radius:15px;>
                 <h3>Popular Posts</h3>
                 <% topPosts.forEach(function(post) {%>
+                <a href="/post/<%= post._id %>">
                 <div class="fakeimg" style="padding:10px;"><h4><%= post.trend %></h4><p>Views: <%= post.views %></p></div><br>
                 <% }); %>
-                </div>
+                </div></a>
                 <div class="card" style=border-radius:15px;>
                 <h3>Follow Me</h3>
                 <p>Some text..</p>
