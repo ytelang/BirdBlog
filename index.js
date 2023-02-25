@@ -14,7 +14,7 @@ const {
   AzureKeyCredential,
 } = require("@azure/ai-text-analytics");
 
-const scheduledFunctions = require('./scheduledFunctions/schedule-post');
+const scheduledFunctions = require("./scheduledFunctions/schedule-post");
 
 // Load secrets
 const secrets = JSON.parse(
@@ -23,14 +23,6 @@ const secrets = JSON.parse(
 
 const az_key = secrets.AZURE_LANG_KEY;
 const az_endpoint = secrets.AZURE_LANG_EP;
-
-const TEST_DOCUMENTS = [
-  {
-    text: "League of Legends is a terrible game. Sometimes matches are fun but the community is just too toxic.",
-    id: "0",
-    language: "en",
-  },
-];
 
 // MongoDB Atlas Connection Code
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -82,6 +74,22 @@ async function getLatestPosts(client, n) {
   });
 }
 
+async function getTrends(client) {
+  const trends = await client.db("bird_blogs").collection("blogPosts").find({});
+}
+
+async function getTrendingPosts(client, trend) {
+  const trendposts = await client
+    .db("bird_blogs")
+    .collection("twitterPosts")
+    .find({ trend: trend })
+    .project({ posts: 1, _id: 0 });
+
+  return new Promise((resolve, reject) => {
+    resolve(trendposts.toArray());
+  });
+}
+
 async function insertBlogPost(client, newPost) {
   const result = await client
     .db("bird_blogs")
@@ -91,6 +99,8 @@ async function insertBlogPost(client, newPost) {
 }
 
 async function analyzeSentiments(documents) {
+  // getTrendingPosts();
+  // console.log(documents);
   const saClient = new TextAnalyticsClient(
     az_endpoint,
     new AzureKeyCredential(az_key)
@@ -100,40 +110,35 @@ async function analyzeSentiments(documents) {
     includeOpinionMining: true,
   });
 
+  totals = {"positive": 0, "negative": 0};
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
-    console.log(`- Document ${result.id}`);
+    // console.log(`- Document ${result.id}`);
     if (!result.error) {
-      console.log(`\tDocument text: ${documents[i].text}`);
-      console.log(`\tOverall Sentiment: ${result.sentiment}`);
-      console.log("\tSentiment confidence scores:", result.confidenceScores);
-      console.log("\tSentences");
-      for (const {
-        sentiment,
-        confidenceScores,
-        opinions,
-      } of result.sentences) {
-        console.log(`\t- Sentence sentiment: ${sentiment}`);
-        console.log("\t  Confidence scores:", confidenceScores);
-        console.log("\t  Mined opinions");
-        for (const { target, assessments } of opinions) {
-          console.log(`\t\t- Target text: ${target.text}`);
-          console.log(`\t\t  Target sentiment: ${target.sentiment}`);
-          console.log(
-            "\t\t  Target confidence scores:",
-            target.confidenceScores
-          );
-          console.log("\t\t  Target assessments");
-          for (const { text, sentiment } of assessments) {
-            console.log(`\t\t\t- Text: ${text}`);
-            console.log(`\t\t\t  Sentiment: ${sentiment}`);
-          }
-        }
+      for (const [key, val] of Object.entries(result.confidenceScores)) {
+        if (key != "neutral") totals[key] += val ;
       }
     } else {
       console.error(`\tError: ${result.error}`);
     }
   }
+  // console.log(totals);
+  const result = Object.entries(totals).reduce((a, b) => a[1] > b[1] ? a : b)[0]
+  return new Promise((resolve, reject) => {
+    resolve(result);
+  });
+}
+
+function generateSADocs(strArr) {
+  documents = [];
+  strArr.map(function (post, idx) {
+    documents.push({
+      text: post,
+      id: idx.toString(),
+      language: "en",
+    });
+  });
+  return documents;
 }
 
 function generateTestDBPost(text, image) {
@@ -217,18 +222,19 @@ app.post("/", async (req, res) => {
 
 app.post("/test-sa", async (req, res) => {
   res.redirect("back");
-  await analyzeSentiments(TEST_DOCUMENTS).catch((err) => {
-    console.error("Sample encoutered an error:", err);
+  let posts = await getTrendingPosts(client, "Testing").catch((err) => {
+    console.error(err);
   });
+  // console.log(posts[0].posts);
+  let documents = generateSADocs(posts[0].posts);
+  let sentiment = await analyzeSentiments(documents);
+  console.log(sentiment);
 });
 
-/**
- * @todo Create frontend .ejs for viewing an individual blog post.
- */
 app.get("/post/:id", async (req, res) => {
-  const post = await Post.findOne({"_id": new ObjectId(req.params.id)});
+  const post = await Post.findOne({ _id: new ObjectId(req.params.id) });
   res.render("../post.ejs", {
-    post
+    post,
   });
 });
 
