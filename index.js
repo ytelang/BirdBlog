@@ -31,7 +31,7 @@ const TEST_DOCUMENTS = [
 ];
 
 // MongoDB Atlas Connection Code
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // const { get } = require("http");
 const dbPass = secrets.MONGO_DB_PASS;
 const uri =
@@ -206,7 +206,7 @@ app.post("/test-sa", async (req, res) => {
  * @todo Create frontend .ejs for viewing an individual blog post.
  */
 app.get("/post/:id", async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  const post = await Post.findOne({"_id": new ObjectId(req.params.id)});
   res.render("../post.ejs", {
     post
   });

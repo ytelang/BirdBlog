@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> <!--bootstrap link-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> <!--bootstrap link-->
         <style>
                 .container{
                 background: #84CAE7;
@@ -10,7 +10,7 @@
 
                 .leftcolumn {
                 float: left;
-                width: 70%;
+                width: 85%;
                 font-family: 'Trebuchet MS';
                 background: #4CE0D2;
                 border-radius: 15px;
@@ -51,6 +51,7 @@
                 padding: 20px;
                 margin-top: 20px;
                 color: #FFFBFE;
+                resize: both;
                 }
 
                 .row:after {
@@ -86,69 +87,37 @@
         </style>
 	<!--<meta http-equiv="refresh" content="5">--> <!-- THIS RELOADS OUR PAGE EVERY _ SECONDS -->
 </head>
+
 <body class="container">
-        <header>
+    <header>
 
-        </header>
+    </header>
 
-        <main>
-                <br>
-                <a href="/">
-                <div class="header" >
-                        <h1>Elon Musk's America</h1>
-                </div>
-                </a>
-
-        </main>
-        <br>
-        <div class="row">
-        <div class="leftcolumn">
-            <!--
-                <div class="card">
-                <h2>Tweeting</h2>
-                <h5>First Tweet, Timestamp IDK</h5>
-                <div class="fakeimg blog-post" style="height:200px;"><%= tweet %></div>
-                <p> Text </p>
-                </div>
-              -->
-                <% latestPosts.forEach(function(post) {%>
-                  <div class="card">
-                  <h2><a href="/post/<%= post._id %>"><%= post.title %></a></h2>
-                  <h5><%= post.trend %>, <%= post.timestamp %></h5>
-                  <div class="fakeimg blog-post" style="height:200px;"><%= post.content %>
-                  </div>
-                  <p>Sentiment: <%= post.sentiment %></p>
-                  </div>
-                <% }); %>
-        </div>
-        <div class="rightcolumn">
-                <div class="card" style=border-radius:15px;>
-                <h2>About Me</h2>
-                <div class="fakeimg" style="height:100px;">Image</div>
-                <p>Some text about me in culpa qui officia deserunt mollit anim..</p>
-                </div>
-                <div class="card" style=border-radius:15px;>
-                <h3>Popular Post</h3>
-                <div class="fakeimg">Image</div><br>
-                <div class="fakeimg">Image</div><br>
-                <div class="fakeimg">Image</div>
-                </div>
-                <div class="card" style=border-radius:15px;>
-                <h3>Follow Me</h3>
-                <p>Some text..</p>
-                </div>
-        </div>
-        </div>
+    <main>
+            <br>
+            <a href="/">
+            <div class="header" >
+                    <h1>Elon Musk's America</h1>
+            </div>
+            </a>
+    </main>
+    <br>
+    <div class="row">
+    <div class="leftcolumn">
         
-        <div class="footer">
-        <h2>Bird Grind</h2>
-        <form action="/" method="POST">
-                <input type="submit" value="Submit" id="btnSend"/>
-        </form>
-        <form action="/test-sa" method="POST">
-                <input type="submit" value="Sentiment Analysis" id="saTest"/>
-        </form>
-        </div>
+              <div class="card">
+              <h2><a href="/post/<%= post._id %>"><%= post.title %></a></h2>
+              <h5><%= post.trend %>, <%= post.timestamp %></h5>
+              <div class="fakeimg blog-post" style="height:200px;"><%= post.content %>
+              </div>
+              <p>Sentiment: <%= post.sentiment %></p>
+              </div>
+    </div>
+    
+    </div>
+    
+    <div class="footer">
+    </div>
 
 </body>
 </html>
