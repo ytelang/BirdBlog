@@ -14,7 +14,7 @@ const secrets = JSON.parse(require('child_process').execSync('node doppler-secre
 
 
 // MongoDB Atlas Connection Code
-const { MongoClient, ServerApiVersion } = require('./webpage/node_modules/mongodb/mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const dbPass = secrets.MONGO_DB_PASS;
 const uri = "mongodb+srv://hackbird23:" + dbPass + "@birdcluster0.ttenopu.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -33,7 +33,7 @@ app.set('view engine', 'ejs');
 //Testing API
 
 async function getResponse() {
-        const { Configuration, OpenAIApi } = require("./webpage/node_modules/openai/dist");
+        const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
 
         const configuration = new Configuration({
         apiKey: secrets.OPEN_AI_KEY,
