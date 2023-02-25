@@ -205,7 +205,7 @@ async function getResponse(trend, sentiment) {
 
 async function getImage(trend, sentiment) {
   const image = await openai.createImage({
-    prompt: "a photo of " + trend + " depicted in a " + sentiment + " manner",
+    prompt: "a photo of " + trend + " depicted in a " + sentiment + " connotation",
     n: 1,
     size: "1024x1024",
   });
