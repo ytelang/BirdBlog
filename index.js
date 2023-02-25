@@ -192,6 +192,18 @@ async function getResponse(trend, sentiment) {
     prompt: "write a " + sentiment + " blog about " + trend,
     max_tokens: 1090,
   });
+  try {
+    let response = completion.data.choices[0].text;
+    console.log(response);
+    // responses.concat(response);
+
+    cleanedResponse = response.trim();
+    return new Promise((resolve, reject) => {
+      resolve(cleanedResponse);
+    });
+  } catch (e) {
+    console.error(e);
+  }
 
   let response = completion.data.choices[0].text;
   console.log(response);
