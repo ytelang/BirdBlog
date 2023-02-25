@@ -37,14 +37,16 @@ async function dbConnect() {
   }
 }
 
-async function listDatabases(client) {
+async function getDbList(client) {
   databasesList = await client.db().admin().listDatabases();
 
-  let dbNames = []
+  let dbNames = [];
 
   databasesList.databases.forEach((db) => dbNames.push(db.name));
-  testR = dbNames.join(', ');
-  return;
+  const dbsJoined = dbNames.join(", ");
+  return new Promise((resolve, reject) => {
+    resolve(dbsJoined);
+  });
 }
 
 async function findOneListingByName(client, nameOfListing) {
@@ -62,6 +64,24 @@ async function findOneListingByName(client, nameOfListing) {
     console.log(`No listings found with the name '${nameOfListing}'`);
   }
 }
+
+async function insertBlogPost(client, newPost) {
+  const result = await client
+    .db("bird_blogs")
+    .collection("blogPosts")
+    .insertOne(newPost);
+  console.log(`New post created with the following id: ${result.insertedId}`);
+}
+
+function generateTestDBPost(text) {
+  return {
+    title: "Test Blog Post",
+    trend: "League of Legends",
+    timestamp: new Date(),
+    content: text,
+    sentiment: "Negative"
+  }
+} 
 
 app.use(bodyParser.json());
 
@@ -91,8 +111,10 @@ async function getResponse() {
   console.log(response);
   // responses.concat(response);
 
-  testR = response.trim() + "\nBars";
-  return;
+  cleanedResponse = response.trim() + "\nBars";
+  return new Promise((resolve, reject) => {
+    resolve(cleanedResponse);
+  });
 }
 
 // End testing API
@@ -104,13 +126,16 @@ app.get("/", (req, res) => {
 });
 
 app.post("/", async (req, res) => {
-  await getResponse();
-  res.redirect('back');
+  let text = await getResponse();
+  testR = text;
+  res.redirect("back");
+  let blogPost = generateTestDBPost(text);
+  await insertBlogPost(client, blogPost);
 });
 
 app.get("/list-dbs", async (req, res) => {
-  await listDatabases(client);
-  res.redirect('back');
+  testR = await getDbList(client);
+  res.redirect("back");
 });
 
 //app.use("/", router);
