@@ -40,6 +40,11 @@
                 color: #FFFBFE;
                 }
 
+                .blog-post {
+                  overflow-y: auto; 
+                  white-space: pre-wrap;
+                }
+
                 .card {
                 color: #160C28;
                 background-color: #22AAA1;
@@ -79,7 +84,7 @@
                 }
                 */
         </style>
-	<meta http-equiv="refresh" content="5">
+	<!--<meta http-equiv="refresh" content="5">--> <!-- THIS RELOADS OUR PAGE EVERY _ SECONDS -->
 </head>
 <body class="container">
         <header>
@@ -99,7 +104,7 @@
                 <div class="card">
                 <h2>Tweeting</h2>
                 <h5>First Tweet, Timestamp IDK</h5>
-                <div class="fakeimg" style="height:200px;"><%= tweet %></div>
+                <div class="fakeimg blog-post" style="height:200px;"><%= tweet %></div>
                 <p> Text </p>
                 </div>
                 <div class="card">
@@ -131,7 +136,10 @@
         <div class="footer">
         <h2>Bird Grind</h2>
         <form action="/" method="POST">
-                <input type="submit" value="Submit" id="btnSend" />
+                <input type="submit" value="Submit" id="btnSend"/>
+        </form>
+        <form action="/list-dbs" method="GET">
+                <input type="submit" value="MongoDB Test" id="dbTest"/>
         </form>
         </div>
 
