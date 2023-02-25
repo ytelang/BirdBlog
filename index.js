@@ -219,9 +219,11 @@ async function getImage(trend, sentiment) {
 
 app.get("/", async (req, res) => {
   postList = await getLatestPosts(client, 5);
+  top3 = [postList[0],postList[1],postList[2]]
   res.render("../index.ejs", {
     tweet: testR,
     latestPosts: postList,
+    topPosts: top3,
   });
 });
 
