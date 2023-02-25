@@ -261,8 +261,8 @@ app.post("/test-sa", async (req, res) => {
 });
 
 app.get("/post/:id", async (req, res) => {
+  await Post.updateOne({_id: new ObjectId(req.params.id)},{$inc:{views: 1}});
   const post = await Post.findOne({ _id: new ObjectId(req.params.id) });
-  Post.updateOne({_id: new ObjectId(req.params.id)},{$inc:{views: 1}});
   res.render("../post.ejs", {
     post,
   });
