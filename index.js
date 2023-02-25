@@ -14,6 +14,8 @@ const {
   AzureKeyCredential,
 } = require("@azure/ai-text-analytics");
 
+const scheduledFunctions = require('./scheduledFunctions/schedule-post');
+
 // Load secrets
 const secrets = JSON.parse(
   require("child_process").execSync("node doppler-secrets.js")
@@ -147,6 +149,8 @@ function generateTestDBPost(text) {
 app.use(bodyParser.json());
 
 app.set("view engine", "ejs");
+
+scheduledFunctions.initScheduledJobs();
 
 // Connect to Atlas MongoDB
 // Connection is open for the entirety of the website's lifetime
