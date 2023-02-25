@@ -8,11 +8,26 @@ var responses = [];
 var testR = "";
 
 const fs = require("fs");
+const {
+  TextAnalyticsClient,
+  AzureKeyCredential,
+} = require("@azure/ai-text-analytics");
 
 // Load secrets
 const secrets = JSON.parse(
   require("child_process").execSync("node doppler-secrets.js")
 );
+
+const az_key = secrets.AZURE_LANG_KEY;
+const az_endpoint = secrets.AZURE_LANG_EP;
+
+const TEST_DOCUMENTS = [
+  {
+    text: "League of Legends is a terrible game. Sometimes matches are fun but the community is just too toxic.",
+    id: "0",
+    language: "en",
+  },
+];
 
 // MongoDB Atlas Connection Code
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -49,22 +64,6 @@ async function getDbList(client) {
   });
 }
 
-async function findOneListingByName(client, nameOfListing) {
-  const result = await client
-    .db("sample_airbnb")
-    .collection("listingsAndReviews")
-    .findOne({ name: nameOfListing });
-
-  if (result) {
-    console.log(
-      `Found a listing in the collection with the name '${nameOfListing}':`
-    );
-    console.log(result);
-  } else {
-    console.log(`No listings found with the name '${nameOfListing}'`);
-  }
-}
-
 async function insertBlogPost(client, newPost) {
   const result = await client
     .db("bird_blogs")
@@ -73,15 +72,61 @@ async function insertBlogPost(client, newPost) {
   console.log(`New post created with the following id: ${result.insertedId}`);
 }
 
+async function analyzeSentiments(documents) {
+  const saClient = new TextAnalyticsClient(
+    az_endpoint,
+    new AzureKeyCredential(az_key)
+  );
+
+  const results = await saClient.analyzeSentiment(documents, {
+    includeOpinionMining: true,
+  });
+
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    console.log(`- Document ${result.id}`);
+    if (!result.error) {
+      console.log(`\tDocument text: ${documents[i].text}`);
+      console.log(`\tOverall Sentiment: ${result.sentiment}`);
+      console.log("\tSentiment confidence scores:", result.confidenceScores);
+      console.log("\tSentences");
+      for (const {
+        sentiment,
+        confidenceScores,
+        opinions,
+      } of result.sentences) {
+        console.log(`\t- Sentence sentiment: ${sentiment}`);
+        console.log("\t  Confidence scores:", confidenceScores);
+        console.log("\t  Mined opinions");
+        for (const { target, assessments } of opinions) {
+          console.log(`\t\t- Target text: ${target.text}`);
+          console.log(`\t\t  Target sentiment: ${target.sentiment}`);
+          console.log(
+            "\t\t  Target confidence scores:",
+            target.confidenceScores
+          );
+          console.log("\t\t  Target assessments");
+          for (const { text, sentiment } of assessments) {
+            console.log(`\t\t\t- Text: ${text}`);
+            console.log(`\t\t\t  Sentiment: ${sentiment}`);
+          }
+        }
+      }
+    } else {
+      console.error(`\tError: ${result.error}`);
+    }
+  }
+}
+
 function generateTestDBPost(text) {
   return {
     title: "Test Blog Post",
     trend: "League of Legends",
     timestamp: new Date(),
     content: text,
-    sentiment: "Negative"
-  }
-} 
+    sentiment: "Negative",
+  };
+}
 
 app.use(bodyParser.json());
 
@@ -134,8 +179,16 @@ app.post("/", async (req, res) => {
 });
 
 app.get("/list-dbs", async (req, res) => {
-  testR = await getDbList(client);
+  let dbList = await getDbList(client);
+  testR = dbList;
   res.redirect("back");
+});
+
+app.post("/test-sa", async (req, res) => {
+  res.redirect("back");
+  await analyzeSentiments(TEST_DOCUMENTS).catch((err) => {
+    console.error("Sample encoutered an error:", err);
+  });
 });
 
 //app.use("/", router);
