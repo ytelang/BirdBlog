@@ -215,11 +215,19 @@ async function getImage(trend, sentiment) {
   });
 }
 
+async function getTop3(client) {
+  const results = await Post.find({views: {$gte: 0}}).project({trend: 1, views: 1}).sort({views: -1}).limit(3);
+  return new Promise((resolve, reject) => {
+    resolve(results.toArray());
+  });
+}
+
 // End testing API
 
 app.get("/", async (req, res) => {
   postList = await getLatestPosts(client, 5);
-  top3 = [postList[0],postList[1],postList[2]]
+  let topViews = await getTop3(client);
+  top3 = [topViews[0],topViews[1],topViews[2]]
   res.render("../index.ejs", {
     tweet: testR,
     latestPosts: postList,
