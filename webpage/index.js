@@ -12,17 +12,17 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
+        var tweet = "Birds on the Grind."
+        //res.render('../index.ejs')
         
-        res.render('../index.ejs')
-        /*
-        res.render('index.ejs', {
-                
+        res.render('../index.ejs', {
+                tweet : tweet
         });
-        */
+        
         
 });
 
-/*
+
 app.post('/', (request, response) => {
         console.log(request.body);
         
@@ -33,7 +33,7 @@ app.post('/', (request, response) => {
         response.send(jsonResponse);
         
 });
-*/
+
 app.use('/', router);
 console.log('Operating on Port: '+port);
 app.listen(process.env.port || port);
