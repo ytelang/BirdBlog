@@ -111,7 +111,7 @@
               -->
                 <% latestPosts.forEach(function(post) {%>
                   <div class="card">
-                  <h2><%= post.title %></h2>
+                  <h2><a href="/post/<%= post._id %>"><%= post.title %></a></h2>
                   <h5><%= post.trend %>, <%= post.timestamp %></h5>
                   <div class="fakeimg blog-post" style="height:200px;"><%= post.content %>
                   </div>
@@ -142,9 +142,6 @@
         <h2>Bird Grind</h2>
         <form action="/" method="POST">
                 <input type="submit" value="Submit" id="btnSend"/>
-        </form>
-        <form action="/list-dbs" method="GET">
-                <input type="submit" value="MongoDB Test" id="dbTest"/>
         </form>
         <form action="/test-sa" method="POST">
                 <input type="submit" value="Sentiment Analysis" id="saTest"/>

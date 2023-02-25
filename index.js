@@ -53,6 +53,8 @@ async function dbConnect() {
   }
 }
 
+const Post = client.db("bird_blogs").collection("blogPosts");
+
 async function getDbList(client) {
   databasesList = await client.db().admin().listDatabases();
 
@@ -180,7 +182,6 @@ async function getResponse() {
 
 app.get("/", async (req, res) => {
   postList = await getLatestPosts(client, 5);
-  console.log(postList);
   res.render("../index.ejs", {
     tweet: testR,
     latestPosts: postList,
@@ -189,22 +190,25 @@ app.get("/", async (req, res) => {
 
 app.post("/", async (req, res) => {
   let text = await getResponse();
-  testR = text;
   res.redirect("back");
   let blogPost = generateTestDBPost(text);
   await insertBlogPost(client, blogPost);
-});
-
-app.get("/list-dbs", async (req, res) => {
-  let dbList = await getDbList(client);
-  testR = dbList;
-  res.redirect("back");
 });
 
 app.post("/test-sa", async (req, res) => {
   res.redirect("back");
   await analyzeSentiments(TEST_DOCUMENTS).catch((err) => {
     console.error("Sample encoutered an error:", err);
+  });
+});
+
+/**
+ * @todo Create frontend .ejs for viewing an individual blog post.
+ */
+app.get("/post/:id", async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  res.render("../post.ejs", {
+    post
   });
 });
 
