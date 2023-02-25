@@ -10,7 +10,7 @@
 
                 .leftcolumn {
                 float: left;
-                width: 85%;
+                width: 100%;
                 font-family: 'Trebuchet MS';
                 background: #4CE0D2;
                 border-radius: 15px;
@@ -51,7 +51,6 @@
                 padding: 20px;
                 margin-top: 20px;
                 color: #FFFBFE;
-                resize: both;
                 }
 
                 .row:after {
@@ -108,7 +107,7 @@
               <div class="card">
               <h2><a href="/post/<%= post._id %>"><%= post.title %></a></h2>
               <h5><%= post.trend %>, <%= post.timestamp %></h5>
-              <div class="fakeimg blog-post" style="height:200px;"><%= post.content %>
+              <div class="fakeimg blog-post" style="min-height:200px; height:auto;"><%= post.content %>
               </div>
               <p>Sentiment: <%= post.sentiment %></p>
               <img src=<%= post.image %> style="width:100%; height:auto" alt="Flowers in Chania">
