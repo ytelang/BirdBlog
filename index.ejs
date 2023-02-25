@@ -135,14 +135,15 @@
                 </div>
               -->
                 <% latestPosts.forEach(function(post) {%>
+                <a href="/post/<%= post._id %>">
                   <div class="card">
-                  <h2><a href="/post/<%= post._id %>"><%= post.title %></a></h2>
+                  <h2 style="color:#262322"><%= post.title %></h2><p style="color:#262322; font-size:10pt;">(Click to expand)</p>
                   <h5><%= post.trend %>, <%= post.timestamp %></h5>
                   <div class="fakeimg blog-post" style="height:250px; display: inline-block;"><%= post.content %>
                   </div>
                   <div style="float: right;"><img class="rightimage" src=<%= post.image %> style="width:auto; height:250px" alt="Flowers in Chania"></div>
                   <p>Sentiment: <%= post.sentiment %></p> 
-                  </div>
+                  </div></a>
                 <% }); %>
         </div>
         <div class="rightcolumn">
