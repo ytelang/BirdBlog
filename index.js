@@ -33,7 +33,7 @@ app.set('view engine', 'ejs');
 //Testing API
 
 async function getResponse() {
-        const { Configuration, OpenAIApi } = require("openai");
+        const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
 
         const configuration = new Configuration({
         apiKey: secrets.OPEN_AI_KEY,
@@ -84,4 +84,4 @@ app.post('/', (req, res) => {
 
 app.use('/', router);
 console.log('Operating on Port: '+port);
-app.listen(process.env.port || port);
+app.listen(process.env.PORT || port, '0.0.0.0');
