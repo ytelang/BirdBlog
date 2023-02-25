@@ -84,4 +84,4 @@ app.post('/', (req, res) => {
 
 app.use('/', router);
 console.log('Operating on Port: '+port);
-app.listen(process.env.port || port);
+app.listen(process.env.PORT || port, '0.0.0.0');
