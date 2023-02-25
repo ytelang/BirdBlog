@@ -141,13 +141,13 @@ function generateSADocs(strArr) {
   return documents;
 }
 
-function generateTestDBPost(text, image) {
+function generateTestDBPost(text, image, sentiment, trend, title) {
   return {
-    title: "Test Blog Post",
-    trend: "League of Legends",
+    title: title,
+    trend: trend,
     timestamp: new Date(),
     content: text,
-    sentiment: "Negative",
+    sentiment: sentiment,
     image: image
   };
 }
@@ -171,11 +171,11 @@ const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
   });
   const openai = new OpenAIApi(configuration);
 
-async function getResponse() {
+async function getResponse(trend, sentiment) {
   
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: "generate an idea for a hypothetical dark souls boss battle",
+    prompt: "write a "+sentiment+" blog about "+trend,
     max_tokens: 1090,
   });
 
@@ -189,9 +189,9 @@ async function getResponse() {
   });
 }
 
-async function getImage() {
+async function getImage(trend, sentiment) {
   const image = await openai.createImage({
-    prompt: "photorealistic dark souls boss in a legendary battle ",
+    prompt: "a photo of "+trend+" depicted in a "+sentiment+" manner",
     n: 1,
     size: "1024x1024",
   });
@@ -213,10 +213,18 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/", async (req, res) => {
-  let text = await getResponse();
-  let img = await getImage();
+  let trend = "League of Legends"
+  let posts = await getTrendingPosts(client, "Testing").catch((err) => {
+    console.error(err);
+  });
+  let documents = generateSADocs(posts[0].posts);
+  let sentiment = await analyzeSentiments(documents);
+  console.log(sentiment);
+
+  let text = await getResponse(trend, sentiment);
+  let img = await getImage(trend, sentiment);
   res.redirect("back");
-  let blogPost = generateTestDBPost(text, img);
+  let blogPost = generateTestDBPost(text, img, sentiment, trend, "Test Blog Post");
   await insertBlogPost(client, blogPost);
 });
 
