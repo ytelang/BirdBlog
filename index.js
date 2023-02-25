@@ -134,13 +134,14 @@ async function analyzeSentiments(documents) {
   }
 }
 
-function generateTestDBPost(text) {
+function generateTestDBPost(text, image) {
   return {
     title: "Test Blog Post",
     trend: "League of Legends",
     timestamp: new Date(),
     content: text,
     sentiment: "Negative",
+    image: image
   };
 }
 
@@ -154,17 +155,18 @@ dbConnect().catch(console.error);
 
 //Testing API
 
-async function getResponse() {
-  const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
+const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
 
   const configuration = new Configuration({
     apiKey: secrets.OPEN_AI_KEY,
   });
   const openai = new OpenAIApi(configuration);
 
+async function getResponse() {
+  
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: "write a short rap dissing league of legends players",
+    prompt: "write an intense play in a sus match of among us",
     max_tokens: 1090,
   });
 
@@ -178,6 +180,18 @@ async function getResponse() {
   });
 }
 
+async function getImage() {
+  const image = await openai.createImage({
+    prompt: "intense play in a sus match of among us",
+    n: 1,
+    size: "1024x1024",
+  });
+  image_url = image.data.data[0].url;
+  return new Promise((resolve, reject) => {
+    resolve(image_url);
+  });
+}
+
 // End testing API
 
 app.get("/", async (req, res) => {
@@ -185,13 +199,15 @@ app.get("/", async (req, res) => {
   res.render("../index.ejs", {
     tweet: testR,
     latestPosts: postList,
+
   });
 });
 
 app.post("/", async (req, res) => {
   let text = await getResponse();
+  let img = await getImage();
   res.redirect("back");
-  let blogPost = generateTestDBPost(text);
+  let blogPost = generateTestDBPost(text, img);
   await insertBlogPost(client, blogPost);
 });
 
