@@ -101,18 +101,23 @@
         <br>
         <div class="row">
         <div class="leftcolumn">
+            <!--
                 <div class="card">
                 <h2>Tweeting</h2>
                 <h5>First Tweet, Timestamp IDK</h5>
                 <div class="fakeimg blog-post" style="height:200px;"><%= tweet %></div>
                 <p> Text </p>
                 </div>
-                <div class="card">
-                <h2>TITLE HEADING</h2>
-                <h5>Title description, Sep 2, 2017</h5>
-                <div class="fakeimg" style="height:200px;">Image</div>
-                <p>Some text..</p>
-                </div>
+              -->
+                <% latestPosts.forEach(function(post) {%>
+                  <div class="card">
+                  <h2><%= post.title %></h2>
+                  <h5><%= post.trend %>, <%= post.timestamp %></h5>
+                  <div class="fakeimg blog-post" style="height:200px;"><%= post.content %>
+                  </div>
+                  <p>Sentiment: <%= post.sentiment %></p>
+                  </div>
+                <% }); %>
         </div>
         <div class="rightcolumn">
                 <div class="card" style=border-radius:15px;>

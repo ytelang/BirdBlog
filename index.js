@@ -5,6 +5,7 @@ const router = express.Router();
 var bodyParser = require("body-parser");
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
 var responses = [];
+var postList = [];
 var testR = "";
 
 const fs = require("fs");
@@ -61,6 +62,19 @@ async function getDbList(client) {
   const dbsJoined = dbNames.join(", ");
   return new Promise((resolve, reject) => {
     resolve(dbsJoined);
+  });
+}
+
+async function getLatestPosts(client, n) {
+  const posts = await client
+    .db("bird_blogs")
+    .collection("blogPosts")
+    .find({}, { title: 1, _id: 0 })
+    .sort({ timestamp: -1 })
+    .limit(n);
+
+  return new Promise((resolve, reject) => {
+    resolve(posts.toArray());
   });
 }
 
@@ -164,9 +178,12 @@ async function getResponse() {
 
 // End testing API
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  postList = await getLatestPosts(client, 5);
+  console.log(postList);
   res.render("../index.ejs", {
     tweet: testR,
+    latestPosts: postList,
   });
 });
 
