@@ -175,7 +175,7 @@ async function getResponse() {
   
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: "write an intense play in a sus match of among us",
+    prompt: "generate an idea for a hypothetical dark souls boss battle",
     max_tokens: 1090,
   });
 
@@ -191,7 +191,7 @@ async function getResponse() {
 
 async function getImage() {
   const image = await openai.createImage({
-    prompt: "intense play in a sus match of among us",
+    prompt: "photorealistic dark souls boss in a legendary battle ",
     n: 1,
     size: "1024x1024",
   });
