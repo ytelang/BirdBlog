@@ -7,7 +7,24 @@ var urlencodedParser = bodyParser.urlencoded({ extended: true });
 var responses = []
 var testR = "testR"
 
-const fs = require('fs')
+const fs = require('fs');
+
+// Load secrets
+const secrets = JSON.parse(require('child_process').execSync('node doppler-secrets.js'));
+
+
+// MongoDB Atlas Connection Code
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const dbPass = secrets.MONGO_DB_PASS;
+const uri = "mongodb+srv://hackbird23:" + dbPass + "@birdcluster0.ttenopu.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+// Test DB connection
+client.connect(err => {
+  const collection = client.db("sample_mflix").collection("comments");
+  // perform actions on the collection object
+  client.close();
+});
 
 app.use(bodyParser.json());
 

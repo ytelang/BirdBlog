@@ -4,30 +4,48 @@
 <head>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> <!--bootstrap link-->
         <style>
-                
+                .container{
+                background: #84CAE7;
+                }
 
                 .leftcolumn {
                 float: left;
-                width: 75%;
+                width: 70%;
+                font-family: 'Trebuchet MS';
+                background: #4CE0D2;
+                border-radius: 15px;
+                padding-bottom: 20px;
                 }
 
                 .header {
                 padding: 30px;
                 font-size: 40px;
+                border-radius: 40px;
                 text-align: center;
-                background: white;
+                font-family: 'Trebuchet MS';
+                background: gray;
+                color: #262322;
+                background-image: url("https://media.discordapp.net/attachments/1078821453719404604/1078863544172425256/bird.png?width=1440&height=466");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 100%;
+                background-position-y: 0%;
                 }
 
                 .fakeimg {
-                background-color: #aaa;
+                background-color: #84CAE7;
                 width: 100%;
                 padding: 20px;
+                border-radius: 15px;
+                color: #FFFBFE;
                 }
 
                 .card {
-                background-color: white;
+                color: #160C28;
+                background-color: #22AAA1;
                 padding: 20px;
                 margin-top: 20px;
+                color: #FFFBFE;
                 }
 
                 .row:after {
@@ -39,17 +57,26 @@
                 .footer {
                 padding: 20px;
                 text-align: center;
-                background: #ddd;
+                background: #0F5257;
+                border-radius: 15px 15px 0px 0px;
                 margin-top: 20px;
+                width: 100%;
                 }
 
+                .rightcolumn {
+                        display: inline-block;
+                        width: 25%;
+                        position: relative;
+                        left: 5%;
+                }
+                /*
                 @media screen and (max-width: 800px) {
                 .leftcolumn, .rightcolumn {
                 width: 100%;
                 padding: 0;
                 }
                 }
-  
+                */
         </style>
 	<meta http-equiv="refresh" content="5">
 </head>
@@ -59,19 +86,20 @@
         </header>
 
         <main>
-                <div class="header">
+                <br>
+                <div class="header" >
                         <h1>Elon Musk's America</h1>
                 </div>
 
         </main>
-
+        <br>
         <div class="row">
         <div class="leftcolumn">
                 <div class="card">
-                <h2>TITLE HEADING</h2>
-                <h5>Title description, Dec 7, 2017</h5>
-                <div class="fakeimg" style="height:200px;">Image</div>
-                <p> <%= tweet %> </p>
+                <h2>Tweeting</h2>
+                <h5>First Tweet, Timestamp IDK</h5>
+                <div class="fakeimg" style="height:200px;"><%= tweet %></div>
+                <p> Text </p>
                 </div>
                 <div class="card">
                 <h2>TITLE HEADING</h2>
@@ -81,18 +109,18 @@
                 </div>
         </div>
         <div class="rightcolumn">
-                <div class="card">
+                <div class="card" style=border-radius:15px;>
                 <h2>About Me</h2>
                 <div class="fakeimg" style="height:100px;">Image</div>
                 <p>Some text about me in culpa qui officia deserunt mollit anim..</p>
                 </div>
-                <div class="card">
+                <div class="card" style=border-radius:15px;>
                 <h3>Popular Post</h3>
                 <div class="fakeimg">Image</div><br>
                 <div class="fakeimg">Image</div><br>
                 <div class="fakeimg">Image</div>
                 </div>
-                <div class="card">
+                <div class="card" style=border-radius:15px;>
                 <h3>Follow Me</h3>
                 <p>Some text..</p>
                 </div>
