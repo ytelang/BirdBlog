@@ -58,9 +58,9 @@ async function getResponse() {
 
 
 app.get('/', function(req, res) {
-        getResponse()
+        //getResponse()
         let tweet = testR
-        console.log(tweet)
+        //console.log(tweet)
         //res.render('../index.ejs')
         
         res.render('../index.ejs', {
@@ -71,15 +71,15 @@ app.get('/', function(req, res) {
 });
 
 
-app.post('/', (request, response) => {
-        console.log(request.body);
+app.post('/', (req, res) => {
+        getResponse()
+        let tweet = testR
+        //console.log(tweet)
+        //res.render('../index.ejs')
         
-        var jsonRequest = request.body;
-        var name = jsonRequest.name;
-        mainDiction[name] = jsonRequest;
-        var jsonResponse = jsonRequest.name;
-        response.send(jsonResponse);
-        
+        res.render('../index.ejs', {
+                tweet : tweet
+        });
 });
 
 app.use('/', router);
