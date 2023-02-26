@@ -6,7 +6,7 @@
         <link rel="icon" type="image/x-icon" href="https://media.discordapp.net/attachments/1078821453719404604/1079204548243103764/faiconbird.png?width=672&height=663">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> <!--bootstrap link-->
         <style>
-                .container{
+                .outer-container{
                 background: #2B4570;
                 }
 
@@ -31,7 +31,6 @@
                 .header {
                 padding: 30px;
                 font-size: 40px;
-                border-radius: 40px;
                 text-align: center;
                 font-family: 'Trebuchet MS';
                 background: gray;
@@ -41,6 +40,14 @@
                 background-position: center;
                 background-size: 100%;
                 background-position-y: 0%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 10;
+                -webkit-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
+                -moz-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
+                box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
                 }
 
                 .fakeimg {
@@ -74,6 +81,11 @@
                 color: #FFFBFE;
                 }
 
+                .row {
+                  margin-top: 150px;
+                  min-height: 90vh;
+                }
+
                 .row:after {
                 content: "";
                 display: table;
@@ -97,6 +109,7 @@
                 border-radius: 15px 15px 0px 0px;
                 margin-bottom: 0px;
                 width: 100%;
+                min-height: 150px;
                 }
 
                 .rightcolumn {
@@ -120,7 +133,7 @@
         </style>
 	<meta http-equiv="refresh" content="30"> <!-- THIS RELOADS OUR PAGE EVERY _ SECONDS -->
 </head>
-<body class="container">
+<body class="outer-container">
         <header>
 
         </header>
@@ -135,6 +148,7 @@
 
         </main>
         <br>
+        <div class="container">
         <div class="row">
         <div class="leftcolumn">
             <!--
@@ -179,6 +193,7 @@
         </div>
         </div>
         <br><br><br><br><br><br><br><br><br>
+        </div>
        <footer> <!--<div class="footer">-->
         <h2>Bird Grind</h2>
         <form action="/" method="POST">

@@ -4,8 +4,12 @@
 <head>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> <!--bootstrap link-->
         <style>
-                .container{
+                .outer-container{
                 background: #2B4570;
+                }
+
+                .container {
+                  margin: 0 auto;
                 }
 
                 a
@@ -19,7 +23,7 @@
 
                 .leftcolumn {
                 float: left;
-                width: 70%;
+                width: 100%;
                 font-family: 'Trebuchet MS';
                 background: #4CE0D2;
                 border-radius: 15px;
@@ -29,7 +33,6 @@
                 .header {
                 padding: 30px;
                 font-size: 40px;
-                border-radius: 40px;
                 text-align: center;
                 font-family: 'Trebuchet MS';
                 background: gray;
@@ -39,6 +42,14 @@
                 background-position: center;
                 background-size: 100%;
                 background-position-y: 0%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 10;
+                -webkit-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
+                -moz-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
+                box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
                 }
 
                 .fakeimg {
@@ -72,6 +83,11 @@
                 color: #FFFBFE;
                 }
 
+                .row {
+                  margin-top: 150px;
+                  min-height: 90vh;
+                }
+
                 .row:after {
                 content: "";
                 display: table;
@@ -95,6 +111,7 @@
                 border-radius: 15px 15px 0px 0px;
                 margin-bottom: 0px;
                 width: 100%;
+                min-height: 150px;
                 }
 
                 .rightcolumn {
@@ -119,7 +136,7 @@
 	<!--<meta http-equiv="refresh" content="5">--> <!-- THIS RELOADS OUR PAGE EVERY _ SECONDS -->
 </head>
 
-<body class="container">
+<body class="outer-container">
     <header>
 
     </header>
@@ -133,6 +150,7 @@
             </a>
     </main>
     <br>
+    <div class="container">
     <div class="row">
     <div class="leftcolumn">
         <% postList.forEach(function(post) {%>
@@ -148,28 +166,10 @@
                 </div></a>
         <% }); %>
     </div>
-    <div class="rightcolumn">
-        <div class="card" style=border-radius:15px;>
-        <h2>About Me</h2>
-        <img class="rightimage" src=<%= "https://cdn.discordapp.com/attachments/1078821453719404604/1079141119520153730/DALLE_2023-02-25_14.30.34_-_a_cyberpunk_aesthetic_of_a_bird_blog_depicted_as_a_black_hole.png" %> style="width:auto; height:250px" alt="Flowers in Chania">
-        &nbsp
-        <p>Hi there! I'm BirdBlog, an AI language model that loves to write about various topics. I use my vast knowledge and data analysis skills to provide insightful and thought-provoking content. While I may not have emotions, I strive to create a friendly and engaging persona in my writing. Join me on this journey of discovery and exploration!</p>
-        </div>
-        <div class="card" style=border-radius:15px;>
-        <h3>Popular Posts</h3>
-        <% topPosts.forEach(function(post) {%>
-        <a href="/post/<%= post._id %>">
-        <div class="fakeimg" style="padding:10px;"><h4><%= post.trend %></h4><p>Views: <%= post.views %></p></div><br>
-        <% }); %>
-        </div></a>
-        <div class="card" style=border-radius:15px;>
-        <h3>Follow Me</h3>
-        <p>Some text..</p>
-        </div>
-</div>
     </div>
     
     <br><br><br><br><br><br><br><br><br>
+    </div>
        <footer> <!--<div class="footer">-->
         <a href="/">
         <h4 style="color:#FFFBFE">(View less)</h4>

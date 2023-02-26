@@ -4,7 +4,7 @@
 <head>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> <!--bootstrap link-->
         <style>
-                .container{
+                .outer-container{
                 background: #2B4570;
                 }
 
@@ -29,7 +29,6 @@
                 .header {
                 padding: 30px;
                 font-size: 40px;
-                border-radius: 40px;
                 text-align: center;
                 font-family: 'Trebuchet MS';
                 background: gray;
@@ -39,6 +38,14 @@
                 background-position: center;
                 background-size: 100%;
                 background-position-y: 0%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 10;
+                -webkit-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
+                -moz-box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
+                box-shadow: 0 7px 8px rgba(0, 0, 0, 0.12);
                 }
 
                 .fakeimg {
@@ -63,6 +70,7 @@
                 }
 
                 .row {
+                  margin-top: 150px;
                   min-height: 90vh
                 }
 
@@ -80,6 +88,7 @@
                 border-radius: 15px 15px 0px 0px;
                 margin-top: 20px;
                 width: 100%;
+                min-height: 150px;
                 }
 
                 .rightcolumn {
@@ -100,7 +109,7 @@
 	<!--<meta http-equiv="refresh" content="5">--> <!-- THIS RELOADS OUR PAGE EVERY _ SECONDS -->
 </head>
 
-<body class="container">
+<body class="outer-container">
     <header>
 
     </header>
@@ -114,6 +123,7 @@
             </a>
     </main>
     <br>
+    <div class="container">
     <div class="row">
     <div class="leftcolumn">
         
@@ -130,7 +140,7 @@
     </div>
     
     </div>
-    
+    </div>
     <div class="footer">
     </div>
 

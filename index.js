@@ -174,13 +174,13 @@ app.set("view engine", "ejs");
 
 // scheduledFunctions.initScheduledJobs();
 
-const scheduledJobFunction = CronJob.schedule("* * * * *", async () => {
-  console.log("Producing blog post!");
-  await produceBlogPost();
-  console.log("Done!");
-});
+// const scheduledJobFunction = CronJob.schedule("* * * * *", async () => {
+//   console.log("Producing blog post!");
+//   await produceBlogPost();
+//   console.log("Done!");
+// });
 
-scheduledJobFunction.start();
+// scheduledJobFunction.start();
 
 // Connect to Atlas MongoDB
 // Connection is open for the entirety of the website's lifetime
