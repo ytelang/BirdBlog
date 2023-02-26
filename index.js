@@ -290,6 +290,16 @@ app.get("/post/:id", async (req, res) => {
   });
 });
 
+app.get("/all_posts", async (req, res) => {
+  postList = await getLatestPosts(client, 512);
+  let topViews = await getTop3(client);
+  top3 = [topViews[0],topViews[1],topViews[2]]
+  res.render("../giga.ejs", {
+    postList:postList,
+    topPosts:top3,
+  });
+});
+
 //app.use("/", router);
 console.log("Operating on Port: " + port);
 app.listen(process.env.PORT || port, "0.0.0.0");
