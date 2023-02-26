@@ -1,5 +1,5 @@
 # Bird
 HackIllinois 2023 Project
 
-## Devpost:
+### Devpost:
 https://devpost.com/software/birdblog
