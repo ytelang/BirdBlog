@@ -25,7 +25,7 @@
 
                 .header {
                 padding: 30px;
-                font-size: 40px;
+                font-size: 2.7em;
                 text-align: center;
                 font-family: 'Trebuchet MS';
                 background: gray;
@@ -64,6 +64,7 @@
                 padding: 20px;
                 margin-top: 20px;
                 color: #FFFBFE;
+                font-size: 1.5em;
                 }
 
                 .row {
@@ -113,19 +114,19 @@
     <br>
     <div class="container">
     <div class="row">
-        <div class="leftcolumn">
-            
-                <div class="card">
-                <h2><a href="/post/<%= post._id %>">#<%= post.trend %></a></h2>
-                <h5>Posted on <%= post.timestamp %></h5>
-                <div class="fakeimg blog-post" style="min-height:200px; height:auto;"><%= post.content %>
-                </div>
-                <p>Sentiment: <%= post.sentiment %></p>
-                <p>Views: <%= post.views %></p>
-                <img src=<%= post.image %> style="width:100%; height:auto" alt="Flowers in Chania">
-                </div>
-                
-        </div>
+    <div class="leftcolumn">
+        
+              <div class="card">
+              <h2 style="font-size: 2em"><a href="/post/<%= post._id %>">#<%= post.trend %></a></h2>
+              <h4>Posted on <%= post.timestamp %></h4>
+              <div class="fakeimg blog-post" style="min-height:200px; height:auto;"><%= post.content %>
+              </div>
+              <p>Sentiment: <%= post.sentiment %></p>
+              <p>Views: <%= post.views %></p>
+              <img src=<%= post.image %> style="width:100%; height:auto" alt="Flowers in Chania">
+              </div>
+              
+    </div>
     
     </div>
     </div>
