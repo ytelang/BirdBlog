@@ -32,7 +32,7 @@
 
                 .header {
                 padding: 30px;
-                font-size: 40px;
+                font-size: 2.7em;
                 text-align: center;
                 font-family: 'Trebuchet MS';
                 background: gray;
@@ -81,6 +81,7 @@
                 padding: 20px;
                 margin-top: 20px;
                 color: #FFFBFE;
+                font-size: 1.5em;
                 }
 
                 .row {
@@ -171,8 +172,8 @@
         <% postList.forEach(function(post) {%>
             <a href="/post/<%= post._id %>">
                 <div class="card">
-                <h2 style="color:#262322">#<%= post.trend %></h2><p style="color:#262322; font-size:10pt;">(Click to expand)</p>
-                <h5>Posted on <%= post.timestamp %></h5>
+                <h2 style="color:#262322; font-size: 2em;">#<%= post.trend %></h2><p style="color:#262322; font-size:0.8em;">(Click to expand)</p>
+                <h4>Posted on <%= post.timestamp %></h4>
                 <div class="card-row">
                   <div class="fakeimg blog-post" style="height:250px; display: inline-block;"><%= post.content %>
                   </div>
