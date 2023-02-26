@@ -3,8 +3,6 @@ var app = express();
 const port = 3000;
 const router = express.Router();
 var bodyParser = require("body-parser");
-var urlencodedParser = bodyParser.urlencoded({ extended: true });
-var responses = [];
 var postList = [];
 var testR = "";
 
@@ -14,8 +12,6 @@ const {
   TextAnalyticsClient,
   AzureKeyCredential,
 } = require("@azure/ai-text-analytics");
-
-// const scheduledFunctions = require("./scheduledFunctions/schedule-post");
 
 // Load secrets
 const secrets = JSON.parse(
@@ -27,7 +23,6 @@ const az_endpoint = secrets.AZURE_LANG_EP;
 
 // MongoDB Atlas Connection Code
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-// const { get } = require("http");
 const dbPass = secrets.MONGO_DB_PASS;
 const uri =
   "mongodb+srv://hackbird23:" +
@@ -47,21 +42,10 @@ async function dbConnect() {
     console.error(e);
   }
 }
-
+// Post is our database of generated blogPosts
 const Post = client.db("bird_blogs").collection("blogPosts");
 
-async function getDbList(client) {
-  databasesList = await client.db().admin().listDatabases();
-
-  let dbNames = [];
-
-  databasesList.databases.forEach((db) => dbNames.push(db.name));
-  const dbsJoined = dbNames.join(", ");
-  return new Promise((resolve, reject) => {
-    resolve(dbsJoined);
-  });
-}
-
+// grabs the n most recently generated posts
 async function getLatestPosts(client, n) {
   const posts = await client
     .db("bird_blogs")
@@ -80,6 +64,7 @@ function chooseRandom(arr) {
   return arr[random];
 }
 
+// grab a list of all trends in our manual dataset
 async function getTrends(client) {
   const trends = await client
     .db("bird_blogs")
@@ -92,6 +77,7 @@ async function getTrends(client) {
   });
 }
 
+// finds associated tweets with a given trend (since we have no Twitter API currently, just grab from our manual dataset in mongodb)
 async function getTrendingPosts(client, trend) {
   const trendposts = await client
     .db("bird_blogs")
@@ -104,6 +90,7 @@ async function getTrendingPosts(client, trend) {
   });
 }
 
+// inserts a newPost from generateTestDBPost into mongodb
 async function insertBlogPost(client, newPost) {
   const result = await client
     .db("bird_blogs")
@@ -113,8 +100,6 @@ async function insertBlogPost(client, newPost) {
 }
 
 async function analyzeSentiments(documents) {
-  // getTrendingPosts();
-  // console.log(documents);
   const saClient = new TextAnalyticsClient(
     az_endpoint,
     new AzureKeyCredential(az_key)
@@ -124,10 +109,9 @@ async function analyzeSentiments(documents) {
     includeOpinionMining: true,
   });
 
-  totals = { positive: 0, negative: 0 };
+  totals = { positive: 0, negative: 0 }; //  we are not looking at the returned "neutral" count
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
-    // console.log(`- Document ${result.id}`);
     if (!result.error) {
       for (const [key, val] of Object.entries(result.confidenceScores)) {
         if (key != "neutral") totals[key] += val;
@@ -136,7 +120,6 @@ async function analyzeSentiments(documents) {
       console.error(`\tError: ${result.error}`);
     }
   }
-  // console.log(totals);
   const result = Object.entries(totals).reduce((a, b) =>
     a[1] > b[1] ? a : b
   )[0];
@@ -145,6 +128,7 @@ async function analyzeSentiments(documents) {
   });
 }
 
+// generate docs for Sentiment Analysis
 function generateSADocs(strArr) {
   documents = [];
   strArr.map(function (post, idx) {
@@ -157,6 +141,7 @@ function generateSADocs(strArr) {
   return documents;
 }
 
+// formats given data into a BSON object for rendering
 function generateTestDBPost(text, image, sentiment, trend) {
   return {
     trend: trend,
@@ -180,6 +165,7 @@ const scheduledJobFunction = CronJob.schedule("* * * * *", async () => {
   console.log("Done!");
 });
 
+// send a query every time unit (* * * * *) means every minute
 scheduledJobFunction.start();
 
 // Connect to Atlas MongoDB
@@ -188,6 +174,7 @@ dbConnect().catch(console.error);
 
 //Testing API
 
+// connect to OpenAI API with a key
 const { Configuration, OpenAIApi } = require("./node_modules/openai/dist");
 
 const configuration = new Configuration({
@@ -195,6 +182,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+// sends a request to GPT3 with OpenAI API
 async function getResponse(trend, sentiment) {
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
@@ -204,7 +192,6 @@ async function getResponse(trend, sentiment) {
   try {
     let response = completion.data.choices[0].text;
     console.log(response);
-    // responses.concat(response);
 
     cleanedResponse = response.trim();
     return new Promise((resolve, reject) => {
@@ -216,7 +203,6 @@ async function getResponse(trend, sentiment) {
 
   let response = completion.data.choices[0].text;
   console.log(response);
-  // responses.concat(response);
 
   cleanedResponse = response.trim();
   return new Promise((resolve, reject) => {
@@ -224,6 +210,7 @@ async function getResponse(trend, sentiment) {
   });
 }
 
+// sends a request to DALL-E with OpenAI API
 async function getImage(trend, sentiment) {
   const image = await openai.createImage({
     prompt:
@@ -237,6 +224,7 @@ async function getImage(trend, sentiment) {
   });
 }
 
+// gets blog posts, sorted in order of most viewed and only the top 3
 async function getTop3(client) {
   const results = await Post.find({ views: { $gte: 0 } })
     .project({ trend: 1, views: 1 })
@@ -247,6 +235,7 @@ async function getTop3(client) {
   });
 }
 
+// generates a blog post and places it in the mongodb
 async function produceBlogPost() {
   console.log("Blog begin");
   let trends = await getTrends(client);
@@ -268,6 +257,7 @@ module.exports = { produceBlogPost };
 
 // End testing API
 
+// anytime page loads, get 5 most recent and top 3 viewed posts
 app.get("/", async (req, res) => {
   postList = await getLatestPosts(client, 5);
   let topViews = await getTop3(client);
@@ -279,22 +269,13 @@ app.get("/", async (req, res) => {
   });
 });
 
+// anytime we send a post request from the cron-job, create and refresh page
 app.post("/", async (req, res) => {
   await produceBlogPost();
   res.redirect("back");
 });
 
-app.post("/test-sa", async (req, res) => {
-  res.redirect("back");
-  let posts = await getTrendingPosts(client, "Testing").catch((err) => {
-    console.error(err);
-  });
-  // console.log(posts[0].posts);
-  let documents = generateSADocs(posts[0].posts);
-  let sentiment = await analyzeSentiments(documents);
-  console.log(sentiment);
-});
-
+// Increments view count for a post by 1, directs to a page with only that post on it
 app.get("/post/:id", async (req, res) => {
   await Post.updateOne(
     { _id: new ObjectId(req.params.id) },
@@ -306,6 +287,7 @@ app.get("/post/:id", async (req, res) => {
   });
 });
 
+// Returns up to 512 of the most recent posts
 app.get("/all_posts", async (req, res) => {
   postList = await getLatestPosts(client, 512);
   let topViews = await getTop3(client);
@@ -316,6 +298,5 @@ app.get("/all_posts", async (req, res) => {
   });
 });
 
-//app.use("/", router);
 console.log("Operating on Port: " + port);
 app.listen(process.env.PORT || port, "0.0.0.0");
