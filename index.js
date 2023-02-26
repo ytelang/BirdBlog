@@ -8,13 +8,14 @@ var responses = [];
 var postList = [];
 var testR = "";
 
+const CronJob = require("node-cron");
 const fs = require("fs");
 const {
   TextAnalyticsClient,
   AzureKeyCredential,
 } = require("@azure/ai-text-analytics");
 
-const scheduledFunctions = require("./scheduledFunctions/schedule-post");
+// const scheduledFunctions = require("./scheduledFunctions/schedule-post");
 
 // Load secrets
 const secrets = JSON.parse(
@@ -171,7 +172,15 @@ app.use(bodyParser.json());
 
 app.set("view engine", "ejs");
 
-scheduledFunctions.initScheduledJobs();
+// scheduledFunctions.initScheduledJobs();
+
+const scheduledJobFunction = CronJob.schedule("* * * * *", async () => {
+  console.log("Producing blog post!");
+  await produceBlogPost();
+  console.log("Done!");
+});
+
+scheduledJobFunction.start();
 
 // Connect to Atlas MongoDB
 // Connection is open for the entirety of the website's lifetime
@@ -217,7 +226,8 @@ async function getResponse(trend, sentiment) {
 
 async function getImage(trend, sentiment) {
   const image = await openai.createImage({
-    prompt: "a photo of " + trend + " depicted in a " + sentiment + " connotation",
+    prompt:
+      "a photo of " + trend + " depicted in a " + sentiment + " connotation",
     n: 1,
     size: "1024x1024",
   });
@@ -228,18 +238,40 @@ async function getImage(trend, sentiment) {
 }
 
 async function getTop3(client) {
-  const results = await Post.find({views: {$gte: 0}}).project({trend: 1, views: 1}).sort({views: -1}).limit(3);
+  const results = await Post.find({ views: { $gte: 0 } })
+    .project({ trend: 1, views: 1 })
+    .sort({ views: -1 })
+    .limit(3);
   return new Promise((resolve, reject) => {
     resolve(results.toArray());
   });
 }
+
+async function produceBlogPost() {
+  console.log("Blog begin");
+  let trends = await getTrends(client);
+  let trendList = [];
+  for (const [key, val] of Object.entries(trends)) trendList.push(val);
+  let trend = chooseRandom(trendList).trend;
+  let posts = await getTrendingPosts(client, trend).catch((err) => {
+    console.error(err);
+  });
+  let documents = generateSADocs(posts[0].posts);
+  let sentiment = await analyzeSentiments(documents);
+  let text = await getResponse(trend, sentiment);
+  let img = await getImage(trend, sentiment);
+  let blogPost = generateTestDBPost(text, img, sentiment, trend);
+  await insertBlogPost(client, blogPost);
+}
+
+module.exports = { produceBlogPost };
 
 // End testing API
 
 app.get("/", async (req, res) => {
   postList = await getLatestPosts(client, 5);
   let topViews = await getTop3(client);
-  top3 = [topViews[0],topViews[1],topViews[2]]
+  top3 = [topViews[0], topViews[1], topViews[2]];
   res.render("../index.ejs", {
     tweet: testR,
     latestPosts: postList,
@@ -248,27 +280,8 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/", async (req, res) => {
-  let trends = await getTrends(client);
-  let trendList = []
-  for (const [key, val] of Object.entries(trends)) trendList.push(val);
-  let trend = chooseRandom(trendList).trend;
-  let posts = await getTrendingPosts(client, trend).catch((err) => {
-    console.error(err);
-  });
-  let documents = generateSADocs(posts[0].posts);
-  let sentiment = await analyzeSentiments(documents);
-  console.log(sentiment);
-
-  let text = await getResponse(trend, sentiment);
-  let img = await getImage(trend, sentiment);
+  await produceBlogPost();
   res.redirect("back");
-  let blogPost = generateTestDBPost(
-    text,
-    img,
-    sentiment,
-    trend
-  );
-  await insertBlogPost(client, blogPost);
 });
 
 app.post("/test-sa", async (req, res) => {
@@ -283,10 +296,23 @@ app.post("/test-sa", async (req, res) => {
 });
 
 app.get("/post/:id", async (req, res) => {
-  await Post.updateOne({_id: new ObjectId(req.params.id)},{$inc:{views: 1}});
+  await Post.updateOne(
+    { _id: new ObjectId(req.params.id) },
+    { $inc: { views: 1 } }
+  );
   const post = await Post.findOne({ _id: new ObjectId(req.params.id) });
   res.render("../post.ejs", {
     post,
+  });
+});
+
+app.get("/all_posts", async (req, res) => {
+  postList = await getLatestPosts(client, 512);
+  let topViews = await getTop3(client);
+  top3 = [topViews[0],topViews[1],topViews[2]]
+  res.render("../giga.ejs", {
+    postList:postList,
+    topPosts:top3,
   });
 });
 
